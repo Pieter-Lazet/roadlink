@@ -1,0 +1,2362 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0B0B0B" />
+  <title>RoadLink</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset ─────────────────────────────────────────────── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ─── Design tokens ──────────────────────────────────────── */
+    :root {
+      --bg:           #0B0B0B;
+      --bg-alt:       #111111;
+      --surface:      #161616;
+      --surface-hover:#1F1F1F;
+      --accent:       #FFD700;
+      --accent-warm:  #FFC200;
+      --accent-muted: #B89B00;
+      --text:         #FFFFFF;
+      --text-sub:     #8A8A8A;
+      --text-muted:   #4A4A4A;
+      --border:       #222222;
+      --border-mid:   #2A2A2A;
+      --red:          #EF4444;
+      --green:        #22C55E;
+
+      --gradient-gold: linear-gradient(135deg, #FFD700 0%, #FFC200 50%, #FFD700 100%);
+      --glow-gold: 0 0 40px rgba(255, 215, 0, 0.15);
+
+      --radius-card: 12px;
+      --radius-btn:  16px;
+      --radius-pill: 9999px;
+
+      --transition: 0.15s ease;
+    }
+
+    /* ─── Base ───────────────────────────────────────────────── */
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ─── Screen system ──────────────────────────────────────── */
+    .screen {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      height: 100dvh;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* ─── Typography ─────────────────────────────────────────── */
+    .display-lg {
+      font-size: clamp(32px, 8vw, 44px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .display-md {
+      font-size: clamp(24px, 6vw, 32px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .body-md {
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.65;
+    }
+
+    .body-sm {
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.5;
+    }
+
+    .label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    /* ─── Shared components ──────────────────────────────────── */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      height: 64px;
+      border: none;
+      border-radius: var(--radius-btn);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
+      user-select: none;
+      -webkit-user-select: none;
+      letter-spacing: -0.01em;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+      opacity: 0.85;
+    }
+
+    .btn-primary {
+      background: var(--gradient-gold);
+      color: #0B0B0B;
+      box-shadow: var(--glow-gold);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 60px rgba(255, 215, 0, 0.25);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--accent);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-hover);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-sub);
+      border: 1px solid var(--border-mid);
+    }
+
+    .btn-ghost:hover {
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .input-field {
+      width: 100%;
+      height: 64px;
+      background: var(--surface);
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-btn);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 16px;
+      padding: 0 20px;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      -webkit-appearance: none;
+    }
+
+    .input-field::placeholder {
+      color: var(--text-muted);
+    }
+
+    .input-field:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08);
+    }
+
+    .input-code {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+    }
+
+    /* ─── Icon button ────────────────────────────────────────── */
+    .icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      background: transparent;
+      border: none;
+      border-radius: 10px;
+      color: var(--text-sub);
+      cursor: pointer;
+      font-size: 20px;
+      transition: background var(--transition), color var(--transition);
+      flex-shrink: 0;
+    }
+
+    .icon-btn:hover {
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .icon-btn:active {
+      background: var(--surface-hover);
+    }
+
+    /* ─── Top bar ────────────────────────────────────────────── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      min-height: 72px;
+    }
+
+    .top-bar-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    /* ─── Session pill ───────────────────────────────────────── */
+    .session-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 16px;
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-pill);
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+    }
+
+    /* ─── Divider ────────────────────────────────────────────── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-mid);
+    }
+
+    /* ─────────────────────────────────────────────────────────── */
+    /* SCREEN 1: HOME                                              */
+    /* ─────────────────────────────────────────────────────────── */
+    #screen-home {
+      justify-content: center;
+      align-items: center;
+      padding: 32px 24px;
+      gap: 0;
+    }
+
+    .home-inner {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .app-icon-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      font-size: 34px;
+      box-shadow: var(--glow-gold);
+      flex-shrink: 0;
+    }
+
+    .home-heading {
+      text-align: center;
+    }
+
+    .home-heading h1 {
+      font-size: clamp(36px, 9vw, 48px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .home-heading p {
+      margin-top: 8px;
+      color: var(--text-sub);
+      font-size: 15px;
+    }
+
+    .home-actions {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .join-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .version-text {
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    /* ─────────────────────────────────────────────────────────── */
+    /* SCREEN 2: RIDE                                              */
+    /* ─────────────────────────────────────────────────────────── */
+    #screen-ride {
+      overflow: hidden;
+    }
+
+    .ride-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 24px 20px 0;
+      gap: 20px;
+    }
+
+    /* Riders section */
+    .section-label {
+      color: var(--text-sub);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .riders-section {
+      flex-shrink: 0;
+      max-height: 40vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .riders-section::-webkit-scrollbar {
+      width: 0;
+    }
+
+    .riders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .rider-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border-mid);
+      border-left: 3px solid transparent;
+      border-radius: var(--radius-card);
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .rider-card.transmitting {
+      background: var(--surface-hover);
+      border-left-color: var(--accent);
+    }
+
+    .rider-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      flex-shrink: 0;
+      transition: background var(--transition);
+    }
+
+    .rider-dot.connected {
+      background: var(--green);
+    }
+
+    .rider-name {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .rider-mic {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      transition: background var(--transition), color var(--transition);
+      flex-shrink: 0;
+    }
+
+    .rider-mic svg {
+      width: 14px;
+      height: 14px;
+      fill: var(--text-muted);
+      transition: fill var(--transition);
+    }
+
+    .rider-card.transmitting .rider-mic {
+      background: rgba(255, 215, 0, 0.12);
+    }
+
+    .rider-card.transmitting .rider-mic svg {
+      fill: var(--accent);
+    }
+
+    .riders-empty {
+      color: var(--text-muted);
+      font-size: 14px;
+      padding: 16px 0;
+      text-align: center;
+    }
+
+    /* PTT section */
+    .ptt-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-bottom: 24px;
+      gap: 16px;
+    }
+
+    .ptt-btn {
+      width: 168px;
+      height: 168px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--glow-gold);
+      transition: background var(--transition), border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      position: relative;
+    }
+
+    .ptt-btn:hover {
+      background: var(--surface-hover);
+      box-shadow: 0 0 60px rgba(255, 215, 0, 0.22);
+    }
+
+    .ptt-btn.transmitting {
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+      border-color: #EF4444;
+      box-shadow: 0 0 50px rgba(239, 68, 68, 0.35);
+      animation: ptt-pulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes ptt-pulse {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.05); }
+    }
+
+    .ptt-btn svg {
+      width: 52px;
+      height: 52px;
+      fill: var(--accent);
+      transition: fill var(--transition);
+    }
+
+    .ptt-btn.transmitting svg {
+      fill: #fff;
+    }
+
+    .ptt-label {
+      color: var(--text-sub);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      text-align: center;
+      height: 18px;
+      transition: color var(--transition);
+    }
+
+    .ptt-label.transmitting {
+      color: var(--red);
+    }
+
+    /* Status bar */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+      min-height: 56px;
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      flex-shrink: 0;
+      transition: background var(--transition);
+    }
+
+    .status-dot.connecting { background: var(--accent); }
+    .status-dot.connected  { background: var(--green); }
+    .status-dot.disconnected { background: var(--red); }
+
+    .status-text {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    .status-riders {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* ─────────────────────────────────────────────────────────── */
+    /* SCREEN 3: SETTINGS                                          */
+    /* ─────────────────────────────────────────────────────────── */
+    #screen-settings {
+      overflow: hidden;
+    }
+
+    .settings-scroll {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 24px 20px 40px;
+    }
+
+    .settings-scroll::-webkit-scrollbar {
+      width: 0;
+    }
+
+    .settings-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 28px;
+    }
+
+    .settings-section {
+      margin-bottom: 32px;
+    }
+
+    .settings-section-label {
+      color: var(--text-sub);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .settings-description {
+      color: var(--text-sub);
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .settings-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .input-field.input-sm {
+      height: 52px;
+      font-size: 14px;
+    }
+
+    .btn-save {
+      height: 56px;
+      font-size: 15px;
+    }
+
+    .settings-about-text {
+      color: var(--text-sub);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .settings-about-text strong {
+      color: var(--text);
+    }
+
+    /* ─── Save toast ─────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--green);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: var(--radius-pill);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      white-space: nowrap;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ─── Ripple on PTT ──────────────────────────────────────── */
+    .ptt-ring {
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      border: 2px solid rgba(239, 68, 68, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .ptt-btn.transmitting .ptt-ring {
+      opacity: 1;
+      animation: ring-pulse 1.6s ease-out infinite;
+    }
+
+    @keyframes ring-pulse {
+      0%   { transform: scale(0.92); opacity: 0.7; }
+      100% { transform: scale(1.18); opacity: 0; }
+    }
+
+    /* ─── Mode toggle (PTT / VOX) ────────────────────────────── */
+    .mode-toggle {
+      display: flex;
+      background: var(--surface);
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-pill);
+      padding: 3px;
+      gap: 2px;
+      width: 100%;
+      max-width: 240px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      height: 38px;
+      border: none;
+      border-radius: calc(var(--radius-pill) - 2px);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .mode-btn.active {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .mode-btn.active.vox {
+      background: rgba(255, 215, 0, 0.1);
+      color: var(--accent);
+    }
+
+    /* VOX level meter */
+    .vox-meter {
+      width: 100%;
+      max-width: 168px;
+      height: 4px;
+      background: var(--border-mid);
+      border-radius: 2px;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.3s;
+      flex-shrink: 0;
+    }
+
+    .vox-meter.visible {
+      opacity: 1;
+    }
+
+    .vox-meter-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.06s linear, background 0.1s;
+    }
+
+    .vox-meter-bar.over {
+      background: var(--red);
+    }
+
+    /* ─── Settings: slider ───────────────────────────────────── */
+    .slider-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: var(--border-mid);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: none;
+    }
+
+    /* ─── Headset hint ───────────────────────────────────────── */
+    .headset-hint {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      background: rgba(255, 215, 0, 0.05);
+      border: 1px solid rgba(255, 215, 0, 0.15);
+      border-radius: var(--radius-card);
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    .headset-hint-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    /* ─── VOX quick-slider (on ride screen) ─────────────────── */
+    .vox-quick-slider {
+      width: 100%;
+      max-width: 220px;
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .vox-quick-slider.visible {
+      display: flex;
+    }
+
+    .vox-quick-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .vox-quick-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-sub);
+    }
+
+    .vox-quick-value {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .vox-quick-hints {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCREEN 1: HOME
+  ═══════════════════════════════════════════════════════ -->
+  <section id="screen-home" class="screen active">
+    <div class="home-inner">
+
+      <div class="app-icon-wrap">🏍️</div>
+
+      <div class="home-heading">
+        <h1>RoadLink</h1>
+        <p class="body-md">Rij samen. Praat vrij.</p>
+      </div>
+
+      <div class="home-actions">
+        <button class="btn btn-primary" id="btn-create">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          </svg>
+          Create Ride
+        </button>
+
+        <div class="divider">— of —</div>
+
+        <div class="join-section">
+          <input
+            id="input-code"
+            class="input-field input-code"
+            type="text"
+            maxlength="6"
+            placeholder="WOLF42"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="characters"
+            spellcheck="false"
+          />
+          <button class="btn btn-secondary" id="btn-join">
+            Join Ride
+          </button>
+        </div>
+      </div>
+
+      <span class="version-text">v1.0.0</span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCREEN 2: RIDE
+  ═══════════════════════════════════════════════════════ -->
+  <section id="screen-ride" class="screen">
+
+    <!-- Top bar -->
+    <div class="top-bar">
+      <button class="icon-btn" id="btn-back-ride" title="Verlaat sessie">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M5 12l7 7M5 12l7-7"/>
+        </svg>
+      </button>
+
+      <div class="top-bar-center">
+        <span class="label" style="color: var(--text-muted);">Sessie</span>
+        <div class="session-pill" id="session-code-display">------</div>
+      </div>
+
+      <button class="icon-btn" id="btn-settings" title="Instellingen">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Main content -->
+    <div class="ride-content">
+
+      <!-- Riders list -->
+      <div class="riders-section">
+        <div class="section-label">Rijders</div>
+        <div class="riders-list" id="riders-list">
+          <div class="riders-empty" id="riders-empty">Wacht op andere rijders...</div>
+        </div>
+      </div>
+
+      <!-- PTT section -->
+      <div class="ptt-section">
+
+        <!-- Mode toggle: PTT / VOX -->
+        <div class="mode-toggle">
+          <button class="mode-btn active" id="btn-mode-ptt">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
+            </svg>
+            PTT
+          </button>
+          <button class="mode-btn vox" id="btn-mode-vox">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+            VOX
+          </button>
+        </div>
+
+        <button class="ptt-btn" id="ptt-btn" title="Houd ingedrukt om te spreken">
+          <div class="ptt-ring"></div>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="9" y="2" width="6" height="12" rx="3" fill="currentColor"/>
+            <path d="M5 10a7 7 0 0 0 14 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="8" y1="23" x2="16" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="ptt-label" id="ptt-label">Houd ingedrukt</div>
+
+        <!-- VOX level meter (visible only in VOX mode) -->
+        <div class="vox-meter" id="vox-meter">
+          <div class="vox-meter-bar" id="vox-meter-bar"></div>
+        </div>
+
+        <!-- VOX sensitivity quick-slider (visible only in VOX mode) -->
+        <div class="vox-quick-slider" id="vox-quick-slider">
+          <div class="vox-quick-header">
+            <span class="vox-quick-label">Gevoeligheid</span>
+            <span class="vox-quick-value" id="vox-quick-value">Normaal</span>
+          </div>
+          <input type="range" id="vox-slider-quick" min="5" max="40" value="15" />
+          <div class="vox-quick-hints">
+            <span>Minder</span>
+            <span>Meer</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Status bar -->
+    <div class="status-bar">
+      <div class="status-left">
+        <div class="status-dot" id="status-dot"></div>
+        <span class="status-text" id="status-text">Verbinding maken...</span>
+      </div>
+      <span class="status-riders" id="status-riders"></span>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCREEN 3: SETTINGS
+  ═══════════════════════════════════════════════════════ -->
+  <section id="screen-settings" class="screen">
+
+    <div class="top-bar">
+      <button class="icon-btn" id="btn-back-settings" title="Terug">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M5 12l7 7M5 12l7-7"/>
+        </svg>
+      </button>
+      <div class="top-bar-center">
+        <span style="font-size:16px; font-weight:600;">Instellingen</span>
+      </div>
+      <div style="width:44px;"></div>
+    </div>
+
+    <div class="settings-scroll">
+
+      <div class="settings-section">
+        <div class="settings-section-label">TURN Server (optioneel)</div>
+        <p class="settings-description">
+          Vul je eigen TURN-server in voor betere verbinding op mobiele netwerken.
+          Laat leeg om STUN-only te gebruiken (werkt op WiFi en hotspot).
+        </p>
+        <div class="settings-inputs">
+          <input
+            id="setting-turn-url"
+            class="input-field input-sm"
+            type="url"
+            placeholder="turn:jouwserver.com:3478"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+          />
+          <input
+            id="setting-turn-user"
+            class="input-field input-sm"
+            type="text"
+            placeholder="Gebruikersnaam"
+            autocomplete="off"
+            autocapitalize="none"
+            spellcheck="false"
+          />
+          <input
+            id="setting-turn-pass"
+            class="input-field input-sm"
+            type="password"
+            placeholder="Wachtwoord"
+            autocomplete="new-password"
+          />
+        </div>
+        <button class="btn btn-primary btn-save" id="btn-save-settings">
+          Opslaan
+        </button>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-label">VOX gevoeligheid</div>
+        <p class="settings-description">
+          Hoe gevoelig de automatische spraakdetectie is. Verlaag bij te veel windlawaai, verhoog als je stem niet opgepikt wordt.
+        </p>
+        <div class="slider-wrap">
+          <input type="range" id="setting-vox-threshold" min="5" max="40" value="15" />
+          <div class="slider-labels">
+            <span>Minder gevoelig</span>
+            <span>Meer gevoelig</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-label">AirPods / headset knop</div>
+        <div class="headset-hint">
+          <span class="headset-hint-icon">🎧</span>
+          <span>Druk eenmaal op de AirPods-steel of headset-knop om zenden aan/uit te zetten. Werkt altijd, ook als de telefoon in je zak zit — in PTT én VOX modus.</span>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-label">Over RoadLink</div>
+        <p class="settings-about-text">
+          <strong>Versie 1.0.0</strong><br /><br />
+          Gebouwd voor motorrijders. Geen account. Geen abonnement. Gewoon rijden.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ═══════════════════════════════════════════════════════
+    // STATE
+    // ═══════════════════════════════════════════════════════
+    const state = {
+      sessionCode: null,
+      myId: null,
+      riders: {},          // { riderId: { name, transmitting, pc, audio } }
+      riderCount: 0,       // used to generate names: Rijder 1, Rijder 2...
+      ws: null,
+      localStream: null,
+      isTransmitting: false,
+      connectionState: 'disconnected', // 'connecting' | 'connected' | 'disconnected'
+      reconnectTimer: null,
+      audioUnlocked: false,
+      previousScreen: 'screen-home',
+      // Transmit mode
+      txMode: 'ptt',       // 'ptt' | 'vox'
+      // VOX state
+      voxAnalyser: null,
+      voxSource: null,
+      voxDataArray: null,
+      voxRafId: null,
+      voxSilenceMs: 0,
+      voxSilenceTimeout: 1200, // ms of silence before stopping
+      // Headset toggle state
+      headsetToggleActive: false,
+      settings: {
+        turnUrl: '',
+        turnUser: '',
+        turnPass: '',
+        voxThreshold: 15    // raw analyser value 0-255 — lower = more sensitive
+      }
+    };
+
+    // ═══════════════════════════════════════════════════════
+    // UTILITIES
+    // ═══════════════════════════════════════════════════════
+
+    function generateId() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+    }
+
+    function generateSessionCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    }
+
+    function log(...args) {
+      console.log('[RoadLink]', ...args);
+    }
+
+    function showToast(msg, color = 'var(--green)') {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.style.background = color;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2500);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // SCREEN NAVIGATION
+    // ═══════════════════════════════════════════════════════
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // SETTINGS
+    // ═══════════════════════════════════════════════════════
+
+    function loadSettings() {
+      try {
+        const saved = localStorage.getItem('roadlink-settings');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state.settings.turnUrl      = parsed.turnUrl      || '';
+          state.settings.turnUser     = parsed.turnUser     || '';
+          state.settings.turnPass     = parsed.turnPass     || '';
+          state.settings.voxThreshold = parsed.voxThreshold != null ? parsed.voxThreshold : 15;
+        }
+        const lastCode = localStorage.getItem('roadlink-last-code');
+        if (lastCode) {
+          document.getElementById('input-code').value = lastCode;
+        }
+      } catch (e) {
+        log('Failed to load settings:', e);
+      }
+    }
+
+    function saveSettings() {
+      state.settings.turnUrl      = document.getElementById('setting-turn-url').value.trim();
+      state.settings.turnUser     = document.getElementById('setting-turn-user').value.trim();
+      state.settings.turnPass     = document.getElementById('setting-turn-pass').value;
+      // Slider: higher value = more sensitive = lower actual threshold
+      const sliderVal = parseInt(document.getElementById('setting-vox-threshold').value, 10);
+      state.settings.voxThreshold = 46 - sliderVal; // invert: slider 5→th 41, slider 40→th 6
+      try {
+        localStorage.setItem('roadlink-settings', JSON.stringify(state.settings));
+      } catch (e) {
+        log('Failed to save settings:', e);
+      }
+      log('Settings saved. VOX threshold:', state.settings.voxThreshold);
+      showToast('Instellingen opgeslagen');
+    }
+
+    function applySettingsToUI() {
+      document.getElementById('setting-turn-url').value  = state.settings.turnUrl;
+      document.getElementById('setting-turn-user').value = state.settings.turnUser;
+      document.getElementById('setting-turn-pass').value = state.settings.turnPass;
+      // Reverse-calculate slider from threshold
+      const sliderVal = 46 - state.settings.voxThreshold;
+      document.getElementById('setting-vox-threshold').value = Math.max(5, Math.min(40, sliderVal));
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // MICROPHONE
+    // ═══════════════════════════════════════════════════════
+
+    async function getMic() {
+      log('Requesting microphone access...');
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        state.localStream = stream;
+        // PTT = push to talk: mic starts muted
+        stream.getTracks().forEach(t => {
+          t.enabled = false;
+        });
+        log('Microphone access granted, tracks muted (PTT off)');
+
+        // Set up AudioContext + AnalyserNode for VOX
+        try {
+          if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          }
+          if (audioCtx.state === 'suspended') {
+            // Will resume on first user gesture
+          }
+          const analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 256;
+          analyser.smoothingTimeConstant = 0.4;
+          const source = audioCtx.createMediaStreamSource(stream);
+          source.connect(analyser);
+          state.voxAnalyser  = analyser;
+          state.voxSource    = source;
+          state.voxDataArray = new Uint8Array(analyser.frequencyBinCount);
+          state.audioUnlocked = (audioCtx.state === 'running');
+          log('VOX analyser ready');
+        } catch (e) {
+          log('Could not set up VOX analyser:', e);
+        }
+
+        return true;
+      } catch (err) {
+        log('Microphone access denied:', err);
+        alert('Microfoon toegang geweigerd. Geef toegang in je browserinstellingen.');
+        return false;
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // AUDIO UNLOCK (iOS Safari)
+    // ═══════════════════════════════════════════════════════
+
+    let audioCtx = null;
+
+    function unlockAudio() {
+      if (state.audioUnlocked) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume().then(() => {
+            state.audioUnlocked = true;
+            log('AudioContext unlocked');
+          });
+        } else {
+          state.audioUnlocked = true;
+          log('AudioContext ready');
+        }
+      } catch (e) {
+        log('AudioContext not available:', e);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // VOX — Voice Operated eXchange
+    // ═══════════════════════════════════════════════════════
+
+    const VOX_FRAME_MS = 30; // approx ms per rAF tick at 30fps — used for silence timer
+
+    function startVox() {
+      if (state.voxRafId) return; // already running
+      if (!state.voxAnalyser) {
+        log('VOX: no analyser available');
+        return;
+      }
+      // Ensure mic tracks are enabled so analyser sees signal (we control actual send separately)
+      if (state.localStream) {
+        state.localStream.getTracks().forEach(t => { t.enabled = true; });
+      }
+      state.voxSilenceMs = 0;
+      document.getElementById('vox-meter').classList.add('visible');
+      log('VOX started');
+      checkVox();
+    }
+
+    function stopVox() {
+      if (state.voxRafId) {
+        cancelAnimationFrame(state.voxRafId);
+        state.voxRafId = null;
+      }
+      document.getElementById('vox-meter').classList.remove('visible');
+      // Reset meter
+      const bar = document.getElementById('vox-meter-bar');
+      bar.style.width = '0%';
+      bar.classList.remove('over');
+      // Silence mic and stop transmitting
+      if (state.localStream) {
+        state.localStream.getTracks().forEach(t => { t.enabled = false; });
+      }
+      if (state.isTransmitting) {
+        stopTransmitting();
+      }
+      log('VOX stopped');
+    }
+
+    function checkVox() {
+      if (state.txMode !== 'vox') return;
+
+      state.voxRafId = requestAnimationFrame(checkVox);
+
+      const analyser  = state.voxAnalyser;
+      const dataArray = state.voxDataArray;
+      analyser.getByteFrequencyData(dataArray);
+
+      // RMS-style average over the frequency bins
+      let sum = 0;
+      for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+      const avg = sum / dataArray.length;
+
+      // Update meter bar
+      const pct = Math.min(100, (avg / 60) * 100);
+      const bar = document.getElementById('vox-meter-bar');
+      bar.style.width = pct + '%';
+
+      const threshold = state.settings.voxThreshold;
+      if (avg > threshold) {
+        bar.classList.add('over');
+        state.voxSilenceMs = 0;
+        if (!state.isTransmitting) {
+          log(`VOX triggered (avg=${avg.toFixed(1)}, threshold=${threshold})`);
+          // Enable mic tracks for actual WebRTC send
+          if (state.localStream) {
+            state.localStream.getTracks().forEach(t => { t.enabled = true; });
+          }
+          // Call startTransmitting without the mic-enable part (already done above)
+          state.isTransmitting = true;
+          sendWS({
+            type: 'transmitting',
+            session: state.sessionCode,
+            riderId: state.myId,
+            active: true
+          });
+          setPttState(true);
+        }
+      } else {
+        bar.classList.remove('over');
+        if (state.isTransmitting) {
+          state.voxSilenceMs += VOX_FRAME_MS;
+          if (state.voxSilenceMs >= state.voxSilenceTimeout) {
+            log(`VOX silence timeout — stopping (avg=${avg.toFixed(1)})`);
+            state.isTransmitting = false;
+            // Keep mic tracks enabled for continued VOX monitoring
+            sendWS({
+              type: 'transmitting',
+              session: state.sessionCode,
+              riderId: state.myId,
+              active: false
+            });
+            setPttState(false);
+            state.voxSilenceMs = 0;
+          }
+        }
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // MODE TOGGLE
+    // ═══════════════════════════════════════════════════════
+
+    function setTxMode(mode) {
+      state.txMode = mode;
+      const pttBtn       = document.getElementById('btn-mode-ptt');
+      const voxBtn       = document.getElementById('btn-mode-vox');
+      const pttBig       = document.getElementById('ptt-btn');
+      const lbl          = document.getElementById('ptt-label');
+      const quickSlider  = document.getElementById('vox-quick-slider');
+
+      if (mode === 'vox') {
+        pttBtn.classList.remove('active');
+        voxBtn.classList.add('active');
+        pttBig.title = 'Tik om VOX handmatig te bedienen';
+        lbl.textContent = 'Luisteren...';
+        lbl.classList.remove('transmitting');
+        // Show quick-slider and sync its value from current settings
+        syncQuickSlider();
+        quickSlider.classList.add('visible');
+        // Start VOX loop (needs AudioContext unlocked)
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume().then(() => {
+            state.audioUnlocked = true;
+            startVox();
+          });
+        } else {
+          startVox();
+        }
+        log('Mode → VOX');
+      } else {
+        voxBtn.classList.remove('active');
+        pttBtn.classList.add('active');
+        pttBig.title = 'Houd ingedrukt om te spreken';
+        quickSlider.classList.remove('visible');
+        // Stop VOX loop and silence mic
+        stopVox();
+        if (!state.isTransmitting) {
+          lbl.textContent = 'Houd ingedrukt';
+          lbl.classList.remove('transmitting');
+        }
+        log('Mode → PTT');
+      }
+    }
+
+    // Sync the quick-slider position and label from state.settings.voxThreshold
+    function syncQuickSlider() {
+      const sliderVal = 46 - state.settings.voxThreshold; // invert threshold → slider
+      const clamped   = Math.max(5, Math.min(40, sliderVal));
+      document.getElementById('vox-slider-quick').value = clamped;
+      updateQuickSliderLabel(clamped);
+    }
+
+    function updateQuickSliderLabel(sliderVal) {
+      const el = document.getElementById('vox-quick-value');
+      if (sliderVal <= 12)       el.textContent = 'Laag';
+      else if (sliderVal <= 22)  el.textContent = 'Normaal';
+      else if (sliderVal <= 32)  el.textContent = 'Hoog';
+      else                       el.textContent = 'Max';
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // HEADSET / AIRPODS BUTTON
+    // ═══════════════════════════════════════════════════════
+
+    function setupHeadsetButton() {
+      // Strategy: intercept MediaSession play/pause — this fires when user
+      // presses AirPods stem, headset inline button, or Bluetooth headset button.
+      // We also intercept keyboard MediaPlayPause for desktop testing.
+
+      if ('mediaSession' in navigator) {
+        // Register a dummy audio to make mediaSession active
+        // (browsers only fire mediaSession handlers when there is active media)
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: 'RoadLink',
+          artist: 'Druk op knop om te zenden',
+          album: state.sessionCode || ''
+        });
+
+        navigator.mediaSession.setActionHandler('play', () => {
+          log('Headset button → toggle transmit (play action)');
+          headsetToggle();
+        });
+
+        navigator.mediaSession.setActionHandler('pause', () => {
+          log('Headset button → toggle transmit (pause action)');
+          headsetToggle();
+        });
+
+        // Next/previous can also be bound for compatibility
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+          log('Headset next → toggle transmit');
+          headsetToggle();
+        });
+
+        log('MediaSession handlers registered for headset button');
+      }
+
+      // Keyboard fallback (useful for desktop testing and some Android headsets)
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'MediaPlayPause' || e.key === 'MediaPlayPause' ||
+            e.code === 'Space' && document.activeElement === document.body) {
+          e.preventDefault();
+          log('Keyboard media key / space → toggle transmit');
+          headsetToggle();
+        }
+      });
+    }
+
+    function headsetToggle() {
+      // Unlock audio on first headset interaction (iOS requirement)
+      unlockAudio();
+
+      // Retry any paused audio elements
+      Object.values(state.riders).forEach(rider => {
+        if (rider.audio && rider.audio.paused) {
+          rider.audio.play().catch(() => {});
+        }
+      });
+
+      if (state.txMode === 'vox') {
+        // In VOX mode: toggle manual override — force transmit / force stop
+        if (state.isTransmitting) {
+          log('Headset: manual stop in VOX mode');
+          state.isTransmitting = false;
+          if (state.localStream) {
+            state.localStream.getTracks().forEach(t => { t.enabled = true; }); // keep enabled for VOX
+          }
+          sendWS({ type: 'transmitting', session: state.sessionCode, riderId: state.myId, active: false });
+          setPttState(false);
+        } else {
+          log('Headset: manual start in VOX mode');
+          if (state.localStream) {
+            state.localStream.getTracks().forEach(t => { t.enabled = true; });
+          }
+          state.isTransmitting = true;
+          sendWS({ type: 'transmitting', session: state.sessionCode, riderId: state.myId, active: true });
+          setPttState(true);
+        }
+      } else {
+        // PTT mode: toggle
+        if (state.isTransmitting) {
+          stopTransmitting();
+        } else {
+          startTransmitting();
+        }
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // WEBSOCKET
+    // ═══════════════════════════════════════════════════════
+
+    // Change to wss://yourdomain.com for production
+    const WS_URL = 'ws://localhost:3000';
+
+    function sendWS(data) {
+      if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+        state.ws.send(JSON.stringify(data));
+      } else {
+        log('WS not open, cannot send:', data.type);
+      }
+    }
+
+    function connectWS(sessionCode) {
+      if (state.ws) {
+        try { state.ws.close(); } catch (_) {}
+      }
+
+      log(`Connecting to WS at ${WS_URL}...`);
+      setConnectionState('connecting');
+
+      const ws = new WebSocket(WS_URL);
+      state.ws = ws;
+
+      ws.addEventListener('open', () => {
+        log('WS connected, joining session', sessionCode);
+        sendWS({
+          type: 'join',
+          session: sessionCode,
+          riderId: state.myId
+        });
+      });
+
+      ws.addEventListener('message', (evt) => {
+        let msg;
+        try {
+          msg = JSON.parse(evt.data);
+        } catch {
+          log('Could not parse WS message');
+          return;
+        }
+        handleWSMessage(msg);
+      });
+
+      ws.addEventListener('close', () => {
+        log('WS disconnected');
+        setConnectionState('disconnected');
+
+        // Only reconnect if we're still in the ride screen
+        if (state.sessionCode) {
+          log('Scheduling reconnect in 3s...');
+          setStatusText('Opnieuw verbinden...');
+          clearTimeout(state.reconnectTimer);
+          state.reconnectTimer = setTimeout(() => {
+            if (state.sessionCode) {
+              log('Reconnecting...');
+              connectWS(state.sessionCode);
+            }
+          }, 3000);
+        }
+      });
+
+      ws.addEventListener('error', (err) => {
+        log('WS error:', err);
+        setConnectionState('disconnected');
+      });
+    }
+
+    function handleWSMessage(msg) {
+      log('WS message received:', msg.type);
+      switch (msg.type) {
+        case 'joined':
+          handleJoined(msg);
+          break;
+        case 'rider-joined':
+          handleRiderJoined(msg);
+          break;
+        case 'rider-left':
+          handleRiderLeft(msg);
+          break;
+        case 'offer':
+          handleOffer(msg);
+          break;
+        case 'answer':
+          handleAnswer(msg);
+          break;
+        case 'ice':
+          handleIce(msg);
+          break;
+        case 'transmitting':
+          handleTransmittingMsg(msg);
+          break;
+        case 'error':
+          log('Server error:', msg.message);
+          alert(msg.message);
+          leaveSession();
+          break;
+        default:
+          log('Unknown WS message type:', msg.type);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // WS MESSAGE HANDLERS
+    // ═══════════════════════════════════════════════════════
+
+    function handleJoined(msg) {
+      log(`Joined session ${msg.session}. Existing riders: [${msg.existingRiders.join(', ')}]`);
+      setConnectionState('connected');
+
+      // For each existing rider, we (the newcomer) initiate the offer
+      // because we are the "later" joiner. But we must determine by riderId comparison:
+      // The rider with the lexicographically LOWER riderId creates the offer.
+      msg.existingRiders.forEach(existingRiderId => {
+        const pc = createPeerConnection(existingRiderId);
+        state.riders[existingRiderId] = {
+          name: null,
+          transmitting: false,
+          pc,
+          audio: null
+        };
+        addRiderCard(existingRiderId);
+
+        // Determine who creates the offer
+        if (state.myId < existingRiderId) {
+          // I have the lower ID — I create the offer
+          createOffer(existingRiderId, pc);
+        } else {
+          // They have the lower ID — they will create the offer
+          log(`Waiting for offer from existing rider ${existingRiderId}`);
+        }
+      });
+
+      updateStatusRiders();
+    }
+
+    async function handleRiderJoined(msg) {
+      const { riderId } = msg;
+      if (riderId === state.myId) return;
+      if (state.riders[riderId]) return; // already tracked
+
+      log(`Rider joined: ${riderId}`);
+
+      const pc = createPeerConnection(riderId);
+      state.riders[riderId] = {
+        name: null,
+        transmitting: false,
+        pc,
+        audio: null
+      };
+      addRiderCard(riderId);
+      updateStatusRiders();
+
+      // If I have the lower ID, I create the offer
+      if (state.myId < riderId) {
+        await createOffer(riderId, pc);
+      } else {
+        log(`Waiting for offer from ${riderId}`);
+      }
+    }
+
+    function handleRiderLeft(msg) {
+      const { riderId } = msg;
+      log(`Rider left: ${riderId}`);
+
+      if (state.riders[riderId]) {
+        const rider = state.riders[riderId];
+        if (rider.pc) {
+          rider.pc.close();
+        }
+        if (rider.audio) {
+          rider.audio.pause();
+          rider.audio.srcObject = null;
+        }
+        delete state.riders[riderId];
+      }
+
+      removeRiderCard(riderId);
+      updateStatusRiders();
+    }
+
+    async function handleOffer(msg) {
+      const { from, sdp } = msg;
+      log(`Received offer from ${from}`);
+
+      let rider = state.riders[from];
+      if (!rider) {
+        // Rider may not be in our list yet — create the entry
+        const pc = createPeerConnection(from);
+        state.riders[from] = { name: null, transmitting: false, pc, audio: null };
+        addRiderCard(from);
+        updateStatusRiders();
+        rider = state.riders[from];
+      }
+
+      const pc = rider.pc;
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        log(`Sending answer to ${from}`);
+        sendWS({
+          type: 'answer',
+          to: from,
+          from: state.myId,
+          sdp: pc.localDescription.sdp
+        });
+      } catch (err) {
+        log('Error handling offer:', err);
+      }
+    }
+
+    async function handleAnswer(msg) {
+      const { from, sdp } = msg;
+      log(`Received answer from ${from}`);
+
+      const rider = state.riders[from];
+      if (!rider || !rider.pc) {
+        log(`No peer connection for ${from}`);
+        return;
+      }
+
+      try {
+        await rider.pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp }));
+      } catch (err) {
+        log('Error handling answer:', err);
+      }
+    }
+
+    async function handleIce(msg) {
+      const { from, candidate } = msg;
+
+      const rider = state.riders[from];
+      if (!rider || !rider.pc) return;
+
+      try {
+        await rider.pc.addIceCandidate(new RTCIceCandidate(candidate));
+      } catch (err) {
+        log('Error adding ICE candidate:', err);
+      }
+    }
+
+    function handleTransmittingMsg(msg) {
+      const { riderId, active } = msg;
+      log(`Rider ${riderId} transmitting: ${active}`);
+
+      const rider = state.riders[riderId];
+      if (rider) {
+        rider.transmitting = active;
+        updateRiderTransmitting(riderId, active);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // WebRTC
+    // ═══════════════════════════════════════════════════════
+
+    function createPeerConnection(riderId) {
+      const iceServers = [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ];
+
+      if (state.settings.turnUrl) {
+        iceServers.push({
+          urls: state.settings.turnUrl,
+          username: state.settings.turnUser,
+          credential: state.settings.turnPass
+        });
+      }
+
+      const pc = new RTCPeerConnection({ iceServers });
+
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
+          sendWS({
+            type: 'ice',
+            to: riderId,
+            from: state.myId,
+            candidate: e.candidate
+          });
+        }
+      };
+
+      pc.ontrack = (e) => {
+        log(`Received audio track from ${riderId}`);
+        const audio = new Audio();
+        audio.srcObject = e.streams[0];
+        // Don't append to DOM — just play
+        audio.play().catch(err => {
+          log('Audio play error (likely needs user gesture):', err);
+          // Will retry on next PTT unlock
+        });
+        if (state.riders[riderId]) {
+          state.riders[riderId].audio = audio;
+        }
+      };
+
+      pc.onconnectionstatechange = () => {
+        log(`PC state for ${riderId}: ${pc.connectionState}`);
+        updateRiderConnectionState(riderId, pc.connectionState);
+      };
+
+      pc.oniceconnectionstatechange = () => {
+        log(`ICE state for ${riderId}: ${pc.iceConnectionState}`);
+      };
+
+      // Add local stream tracks
+      if (state.localStream) {
+        state.localStream.getTracks().forEach(track => {
+          pc.addTrack(track, state.localStream);
+        });
+      }
+
+      return pc;
+    }
+
+    async function createOffer(riderId, pc) {
+      try {
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        log(`Sending offer to ${riderId}`);
+        sendWS({
+          type: 'offer',
+          to: riderId,
+          from: state.myId,
+          sdp: pc.localDescription.sdp
+        });
+      } catch (err) {
+        log('Error creating offer:', err);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // PTT
+    // ═══════════════════════════════════════════════════════
+
+    function startTransmitting() {
+      if (state.isTransmitting) return;
+      unlockAudio();
+
+      // Retry any paused audio elements on first PTT
+      Object.values(state.riders).forEach(rider => {
+        if (rider.audio && rider.audio.paused) {
+          rider.audio.play().catch(() => {});
+        }
+      });
+
+      state.isTransmitting = true;
+
+      if (state.localStream) {
+        state.localStream.getTracks().forEach(t => { t.enabled = true; });
+      }
+
+      log('PTT start — transmitting');
+
+      sendWS({
+        type: 'transmitting',
+        session: state.sessionCode,
+        riderId: state.myId,
+        active: true
+      });
+
+      setPttState(true);
+    }
+
+    function stopTransmitting() {
+      if (!state.isTransmitting) return;
+      state.isTransmitting = false;
+
+      if (state.localStream) {
+        state.localStream.getTracks().forEach(t => { t.enabled = false; });
+      }
+
+      log('PTT stop — silent');
+
+      sendWS({
+        type: 'transmitting',
+        session: state.sessionCode,
+        riderId: state.myId,
+        active: false
+      });
+
+      setPttState(false);
+    }
+
+    function setPttState(transmitting) {
+      const btn = document.getElementById('ptt-btn');
+      const lbl = document.getElementById('ptt-label');
+      if (transmitting) {
+        btn.classList.add('transmitting');
+        lbl.classList.add('transmitting');
+        lbl.textContent = 'Zenden...';
+      } else {
+        btn.classList.remove('transmitting');
+        lbl.classList.remove('transmitting');
+        lbl.textContent = state.txMode === 'vox' ? 'Luisteren...' : 'Houd ingedrukt';
+      }
+      // Also update my rider card's transmitting state visually
+      updateRiderTransmitting(state.myId, transmitting);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // UI — RIDERS
+    // ═══════════════════════════════════════════════════════
+
+    function getRiderName(riderId) {
+      if (riderId === state.myId) return 'Jij';
+      const rider = state.riders[riderId];
+      if (rider && rider.name) return rider.name;
+      // Assign a sequential name
+      const idx = Object.keys(state.riders).filter(id => id !== state.myId).indexOf(riderId);
+      return `Rijder ${idx + 1}`;
+    }
+
+    function addRiderCard(riderId) {
+      const list = document.getElementById('riders-list');
+      const empty = document.getElementById('riders-empty');
+      if (empty) empty.style.display = 'none';
+
+      // Prevent duplicates
+      if (document.getElementById(`rider-${riderId}`)) return;
+
+      const name = getRiderName(riderId);
+      if (state.riders[riderId]) {
+        state.riders[riderId].name = name;
+      }
+
+      const card = document.createElement('div');
+      card.className = 'rider-card';
+      card.id = `rider-${riderId}`;
+      card.innerHTML = `
+        <div class="rider-dot" id="dot-${riderId}"></div>
+        <span class="rider-name">${name}</span>
+        <div class="rider-mic" id="mic-${riderId}">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="9" y="2" width="6" height="12" rx="3" fill="currentColor"/>
+            <path d="M5 10a7 7 0 0 0 14 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="8" y1="23" x2="16" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      `;
+      list.appendChild(card);
+    }
+
+    function addMyRiderCard() {
+      const list = document.getElementById('riders-list');
+      const empty = document.getElementById('riders-empty');
+      if (empty) empty.style.display = 'none';
+
+      if (document.getElementById(`rider-${state.myId}`)) return;
+
+      const card = document.createElement('div');
+      card.className = 'rider-card';
+      card.id = `rider-${state.myId}`;
+      card.innerHTML = `
+        <div class="rider-dot connected" id="dot-${state.myId}"></div>
+        <span class="rider-name">Jij</span>
+        <div class="rider-mic" id="mic-${state.myId}">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="9" y="2" width="6" height="12" rx="3" fill="currentColor"/>
+            <path d="M5 10a7 7 0 0 0 14 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="8" y1="23" x2="16" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      `;
+      list.appendChild(card);
+    }
+
+    function removeRiderCard(riderId) {
+      const card = document.getElementById(`rider-${riderId}`);
+      if (card) card.remove();
+
+      const list = document.getElementById('riders-list');
+      const empty = document.getElementById('riders-empty');
+      // Show empty state if only "Jij" card remains or none
+      const cards = list.querySelectorAll('.rider-card:not(#rider-' + state.myId + ')');
+      if (cards.length === 0 && empty) {
+        empty.style.display = '';
+      }
+    }
+
+    function updateRiderConnectionState(riderId, connectionState) {
+      const dot = document.getElementById(`dot-${riderId}`);
+      if (!dot) return;
+      dot.className = 'rider-dot';
+      if (connectionState === 'connected') {
+        dot.classList.add('connected');
+      }
+    }
+
+    function updateRiderTransmitting(riderId, active) {
+      const card = document.getElementById(`rider-${riderId}`);
+      if (!card) return;
+      if (active) {
+        card.classList.add('transmitting');
+      } else {
+        card.classList.remove('transmitting');
+      }
+    }
+
+    function clearRiderCards() {
+      const list = document.getElementById('riders-list');
+      list.innerHTML = '<div class="riders-empty" id="riders-empty">Wacht op andere rijders...</div>';
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // UI — STATUS BAR
+    // ═══════════════════════════════════════════════════════
+
+    function setConnectionState(state_str) {
+      state.connectionState = state_str;
+      const dot  = document.getElementById('status-dot');
+      const text = document.getElementById('status-text');
+
+      dot.className = 'status-dot ' + state_str;
+
+      if (state_str === 'connecting') {
+        text.textContent = 'Verbinding maken...';
+      } else if (state_str === 'connected') {
+        text.textContent = 'Verbonden';
+      } else {
+        text.textContent = 'Verbinding verbroken';
+      }
+    }
+
+    function setStatusText(msg) {
+      document.getElementById('status-text').textContent = msg;
+    }
+
+    function updateStatusRiders() {
+      const el = document.getElementById('status-riders');
+      const total = Object.keys(state.riders).length + 1; // +1 for self
+      el.textContent = total === 1 ? '1 rijder online' : `${total} rijders online`;
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // SESSION MANAGEMENT
+    // ═══════════════════════════════════════════════════════
+
+    async function startSession(code) {
+      state.sessionCode = code;
+      state.myId = generateId();
+      state.riderCount = 0;
+      state.riders = {};
+      state.isTransmitting = false;
+
+      log(`Starting session ${code} as rider ${state.myId}`);
+
+      // Update UI
+      document.getElementById('session-code-display').textContent = code;
+
+      try {
+        localStorage.setItem('roadlink-last-code', code);
+      } catch (_) {}
+
+      // Reset to PTT mode for fresh session
+      state.txMode = 'ptt';
+
+      // Show ride screen immediately
+      showScreen('screen-ride');
+      clearRiderCards();
+      addMyRiderCard();
+      updateStatusRiders();
+      setPttState(false);
+
+      // Reset mode toggle UI
+      document.getElementById('btn-mode-ptt').classList.add('active');
+      document.getElementById('btn-mode-vox').classList.remove('active');
+      document.getElementById('vox-meter').classList.remove('visible');
+      document.getElementById('vox-quick-slider').classList.remove('visible');
+
+      // Request mic
+      const micOk = await getMic();
+      if (!micOk) {
+        // Go back home if mic denied
+        leaveSession(false);
+        return;
+      }
+
+      // Register headset / AirPods button handler
+      setupHeadsetButton();
+
+      connectWS(code);
+    }
+
+    function leaveSession(navigate = true) {
+      log('Leaving session', state.sessionCode);
+
+      // Stop VOX loop
+      if (state.voxRafId) {
+        cancelAnimationFrame(state.voxRafId);
+        state.voxRafId = null;
+      }
+
+      // Reset mode UI for next session
+      state.txMode = 'ptt';
+
+      // Clear MediaSession
+      if ('mediaSession' in navigator) {
+        try {
+          navigator.mediaSession.setActionHandler('play', null);
+          navigator.mediaSession.setActionHandler('pause', null);
+          navigator.mediaSession.setActionHandler('nexttrack', null);
+        } catch (_) {}
+      }
+
+      clearTimeout(state.reconnectTimer);
+
+      if (state.sessionCode && state.myId) {
+        sendWS({ type: 'leave', session: state.sessionCode, riderId: state.myId });
+      }
+
+      // Close all peer connections
+      Object.entries(state.riders).forEach(([id, rider]) => {
+        if (rider.pc) {
+          rider.pc.close();
+        }
+        if (rider.audio) {
+          rider.audio.pause();
+          rider.audio.srcObject = null;
+        }
+      });
+
+      // Stop local stream
+      if (state.localStream) {
+        state.localStream.getTracks().forEach(t => t.stop());
+        state.localStream = null;
+      }
+
+      // Close WS
+      if (state.ws) {
+        try { state.ws.close(); } catch (_) {}
+        state.ws = null;
+      }
+
+      state.sessionCode = null;
+      state.myId = null;
+      state.riders = {};
+      state.isTransmitting = false;
+      state.connectionState = 'disconnected';
+
+      if (navigate) {
+        showScreen('screen-home');
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // EVENT LISTENERS
+    // ═══════════════════════════════════════════════════════
+
+    // Home: Create Ride
+    document.getElementById('btn-create').addEventListener('click', () => {
+      const code = generateSessionCode();
+      startSession(code);
+    });
+
+    // Home: Join Ride
+    document.getElementById('btn-join').addEventListener('click', () => {
+      const input = document.getElementById('input-code');
+      const code = input.value.trim().toUpperCase();
+      if (code.length !== 6) {
+        input.focus();
+        input.style.borderColor = 'var(--red)';
+        setTimeout(() => { input.style.borderColor = ''; }, 1500);
+        return;
+      }
+      startSession(code);
+    });
+
+    // Home: Force uppercase on code input
+    document.getElementById('input-code').addEventListener('input', (e) => {
+      const start = e.target.selectionStart;
+      const end = e.target.selectionEnd;
+      e.target.value = e.target.value.toUpperCase();
+      e.target.setSelectionRange(start, end);
+    });
+
+    // Home: Join on Enter
+    document.getElementById('input-code').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('btn-join').click();
+      }
+    });
+
+    // Ride: Back button
+    document.getElementById('btn-back-ride').addEventListener('click', () => {
+      if (confirm('Verlaat de sessie?')) {
+        leaveSession();
+      }
+    });
+
+    // Ride: Settings button
+    document.getElementById('btn-settings').addEventListener('click', () => {
+      state.previousScreen = 'screen-ride';
+      applySettingsToUI();
+      showScreen('screen-settings');
+    });
+
+    // Settings: Back button
+    document.getElementById('btn-back-settings').addEventListener('click', () => {
+      const dest = state.previousScreen || 'screen-home';
+      showScreen(dest);
+    });
+
+    // Settings: Save
+    document.getElementById('btn-save-settings').addEventListener('click', () => {
+      saveSettings();
+    });
+
+    // Mode toggle buttons
+    document.getElementById('btn-mode-ptt').addEventListener('click', () => {
+      if (state.txMode !== 'ptt') setTxMode('ptt');
+    });
+
+    document.getElementById('btn-mode-vox').addEventListener('click', () => {
+      if (state.txMode !== 'vox') setTxMode('vox');
+    });
+
+    // VOX quick-slider on ride screen — updates threshold in real time
+    document.getElementById('vox-slider-quick').addEventListener('input', (e) => {
+      const sliderVal = parseInt(e.target.value, 10);
+      state.settings.voxThreshold = 46 - sliderVal; // invert: higher slider = more sensitive = lower threshold
+      updateQuickSliderLabel(sliderVal);
+      // Keep settings screen slider in sync
+      document.getElementById('setting-vox-threshold').value = sliderVal;
+      // Persist immediately
+      try { localStorage.setItem('roadlink-settings', JSON.stringify(state.settings)); } catch (_) {}
+      log(`VOX threshold updated: ${state.settings.voxThreshold} (slider: ${sliderVal})`);
+    });
+
+    // Settings VOX slider — keep quick-slider in sync
+    document.getElementById('setting-vox-threshold').addEventListener('input', (e) => {
+      const sliderVal = parseInt(e.target.value, 10);
+      state.settings.voxThreshold = 46 - sliderVal;
+      document.getElementById('vox-slider-quick').value = sliderVal;
+      updateQuickSliderLabel(sliderVal);
+    });
+
+    // PTT button — behaves differently in PTT vs VOX mode
+    const pttBtn = document.getElementById('ptt-btn');
+
+    pttBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (state.txMode === 'vox') {
+        headsetToggle(); // manual override tap in VOX mode
+      } else {
+        startTransmitting();
+      }
+    }, { passive: false });
+
+    pttBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      if (state.txMode === 'ptt') {
+        stopTransmitting();
+      }
+      // In VOX mode: touchstart already toggled, touchend does nothing
+    }, { passive: false });
+
+    pttBtn.addEventListener('touchcancel', (e) => {
+      e.preventDefault();
+      if (state.txMode === 'ptt') {
+        stopTransmitting();
+      }
+    }, { passive: false });
+
+    pttBtn.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      if (state.txMode === 'vox') {
+        headsetToggle();
+      } else {
+        startTransmitting();
+      }
+    });
+
+    pttBtn.addEventListener('mouseup', (e) => {
+      e.preventDefault();
+      if (state.txMode === 'ptt') {
+        stopTransmitting();
+      }
+    });
+
+    pttBtn.addEventListener('mouseleave', () => {
+      if (state.txMode === 'ptt') {
+        stopTransmitting();
+      }
+    });
+
+    // Prevent context menu on long press
+    pttBtn.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // SERVICE WORKER
+    // ═══════════════════════════════════════════════════════
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(err => {
+        log('Service worker registration failed:', err);
+      });
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // INIT
+    // ═══════════════════════════════════════════════════════
+
+    loadSettings();
+    log('RoadLink v1.0.0 ready');
+  </script>
+</body>
+</html>
